@@ -1,0 +1,158 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:WeatherApp.ViewModels"
+        x:Class="WeatherApp.Views.MainWindow"
+        Title="Weather App"
+        SizeToContent="WidthAndHeight"
+        MinWidth="400" MinHeight="300"
+        WindowStartupLocation="CenterScreen"
+        Background="{Binding SearchVM.BackgroundBrush}">
+
+  <TabControl Margin="8">
+
+    <TabItem Header="Recherche">
+      <Grid Margin="20" RowDefinitions="Auto, Auto, Auto, *">
+
+        <TextBlock Grid.Row="0" Text="Recherche météo" FontSize="22" FontWeight="Bold" Margin="0,0,0,12"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
+          <AutoCompleteBox x:Name="SearchBox"
+                          Text="{Binding SearchVM.CityInput}"
+                          ItemsSource="{Binding SearchVM.CitySuggestions}"
+                          FilterMode="Contains"
+                          Watermark="Entrez une ville..."
+                          Width="320"
+                          KeyDown="SearchBox_KeyDown"/>
+          <Button Content="Rechercher" Click="SearchButton_Click" Width="120"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="0,0,0,12">
+          <TextBlock Text="Chargement..." IsVisible="{Binding SearchVM.IsLoading}"
+                    Foreground="Gray" FontStyle="Italic"/>
+          <TextBlock Text="{Binding SearchVM.ErrorMessage}"
+                    IsVisible="{Binding SearchVM.ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                    Foreground="Red" TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <Border Grid.Row="3" IsVisible="{Binding SearchVM.HasResult}"
+                CornerRadius="12" ClipToBounds="True" Margin="0,8,0,0">
+          <Panel>
+            <Image Source="{Binding SearchVM.CityImage}" Stretch="UniformToFill"/>
+            <Border Background="#99000000" />
+
+            <Grid ColumnDefinitions="Auto,*" Margin="32" VerticalAlignment="Center">
+              <Image Grid.Column="0"
+                    Source="{Binding SearchVM.IconUrl}"
+                    Width="140" Height="140"
+                    VerticalAlignment="Center" Margin="0,0,32,0"/>
+
+              <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center">
+                <TextBlock Text="{Binding SearchVM.CityName}"
+                          FontSize="42" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="{Binding SearchVM.Coordinates}"
+                          Foreground="#DDDDDD" FontSize="16"/>
+                <TextBlock Text="{Binding SearchVM.Temperature}"
+                          FontSize="56" FontWeight="Light" Foreground="White"/>
+                <TextBlock Text="{Binding SearchVM.Description}"
+                          FontSize="24" FontStyle="Italic" Foreground="#EEEEEE"/>
+                <TextBlock Text="{Binding SearchVM.Humidity}" 
+                          Foreground="White" FontSize="18"/>
+              </StackPanel>
+            </Grid>
+          </Panel>
+        </Border>
+
+      </Grid>
+    </TabItem>
+
+    <TabItem Header="Prévisions">
+      <Grid Margin="20" RowDefinitions="Auto, Auto, Auto, *">
+
+        <TextBlock Grid.Row="0" Text="Prévisions sur 5 jours" FontSize="22" FontWeight="Bold" Margin="0,0,0,12"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
+          <AutoCompleteBox x:Name="ForecastBox"
+                          Text="{Binding ForecastVM.CityInput}"
+                          ItemsSource="{Binding SearchVM.CitySuggestions}"
+                          FilterMode="Contains"
+                          Watermark="Entrez une ville..."
+                          Width="320"
+                          KeyDown="ForecastBox_KeyDown"/>
+          <Button Content="Rechercher" Click="ForecastButton_Click" Width="120"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="0,0,0,12">
+          <TextBlock Text="Chargement..." IsVisible="{Binding ForecastVM.IsLoading}" Foreground="Gray" FontStyle="Italic"/>
+          <TextBlock Text="{Binding ForecastVM.ErrorMessage}" IsVisible="{Binding ForecastVM.ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" Foreground="Red" TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <Border Grid.Row="3" IsVisible="{Binding ForecastVM.HasResult}" CornerRadius="12" ClipToBounds="True" Margin="0,8,0,0">
+          <Panel>
+            
+            <Image Source="{Binding ForecastVM.CityImage}" Stretch="UniformToFill"/>
+
+            <ItemsControl ItemsSource="{Binding ForecastVM.Days}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <UniformGrid Columns="5" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  
+                  <Border BorderBrush="#33FFFFFF" BorderThickness="1"
+                          CornerRadius="8" Padding="16" 
+                          Background="#B3000000" 
+                          Margin="8" VerticalAlignment="Stretch">
+                    
+                    <StackPanel Spacing="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding Date}" FontWeight="Bold" TextAlignment="Center" FontSize="26" Foreground="White"/>
+                      <Image Source="{Binding IconUrl}" Width="900" Height="90" HorizontalAlignment="Center"/>
+                      <TextBlock Text="{Binding Temperature}" FontSize="32" FontWeight="Bold" Foreground="White" TextAlignment="Center"/>
+                      <TextBlock Text="{Binding Description}" FontStyle="Italic" TextAlignment="Center" TextWrapping="Wrap" FontSize="16" Foreground="#DDDDDD"/>
+                      <TextBlock Text="{Binding Humidity}" FontSize="14" Foreground="#BBBBBB" TextAlignment="Center"/>
+                    </StackPanel>
+                    
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Panel>
+        </Border>
+
+      </Grid>
+    </TabItem>
+
+    <TabItem Header="Paramètres">
+      <StackPanel Margin="20" Spacing="16">
+
+        <TextBlock Text="Paramètres" FontSize="22" FontWeight="Bold"/>
+
+        <StackPanel Spacing="4">
+          <TextBlock Text="Ville par défaut"/>
+          <AutoCompleteBox Text="{Binding SettingsVM.DefaultCity}"
+                 ItemsSource="{Binding SearchVM.CitySuggestions}"
+                 FilterMode="Contains"
+                 Watermark="Ex : Paris" 
+                 Width="320"
+                 HorizontalAlignment="Left"/>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+          <TextBlock Text="Langue des réponses météo"/>
+          <ComboBox ItemsSource="{Binding SettingsVM.Languages}"
+                    SelectedItem="{Binding SettingsVM.SelectedLanguage}"
+                    Width="200" HorizontalAlignment="Left"/>
+        </StackPanel>
+
+        <Button Content="Enregistrer" Click="SaveButton_Click" Width="160"/>
+
+        <TextBlock Text="{Binding SettingsVM.SaveMessage}"
+                   Foreground="Green" FontStyle="Italic"/>
+
+      </StackPanel>
+    </TabItem>
+
+  </TabControl>
+</Window>
