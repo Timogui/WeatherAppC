@@ -11,7 +11,8 @@ Application météo en C# .NET avec Avalonia UI et l'API OpenWeatherMap
 ## Prérequis
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
-- clé API [OpenWeatherMap](https://openweathermap.org/appid)
+- clé API [OpenWeatherMap](https://openweathermap.org)
+- clé API [Unspalsh](https://unsplash.com/)
 
 ## Installation
 
